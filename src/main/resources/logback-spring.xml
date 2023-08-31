@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="true">
+    <property name="LOG_PATH" value="logs"/>
+    <property name="LOG_ARCHIVE" value="${LOG_PATH}/archive"/>
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+    <appender name="Console-Appender-Error" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <layout>
+<!--        <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36} - %msg%n</pattern>-->
+            <pattern>%boldRed(%d{yyyy-MM-dd HH:mm:ss.SSS}) %highlight(%-5level) %red([${springAppName},%X{X-B3-TraceId:-}] %msg%n)</pattern>
+        </layout>
+    </appender>
+
+
+    <appender name="Console-Appender-Debug" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <layout>
+            <!--        <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36} - %msg%n</pattern>-->
+            <pattern>%cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) %boldCyan(%-5level) [%cyan(${springAppName},%X{X-B3-TraceId:-})] %cyan(%msg%n)</pattern>
+        </layout>
+    </appender>
+
+    <appender name="Console-Appender" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <layout>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [${springAppName},%X{X-B3-TraceId:-}] %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="File-Appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/jcourier_app.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [${springAppName},%X{X-B3-TraceId:-}] %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_ARCHIVE}/jcourier_app_%d{dd-MM-yyyy}_%i.log.zip</fileNamePattern>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+    <springProfile name="dev,dev-local">
+        <logger name="kz.almanit.orderinfobot" level="DEBUG">
+            <appender-ref ref="File-Appender"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="stage,prod">
+        <logger name="kz.almanit.orderinfobot" level="INFO">
+            <appender-ref ref="File-Appender"/>
+        </logger>
+    </springProfile>
+
+    <root level="INFO">
+        <appender-ref ref="Console-Appender"/>
+        <appender-ref ref="Console-Appender-Debug"/>
+        <appender-ref ref="Console-Appender-Error"/>
+    </root>
+
+</configuration>

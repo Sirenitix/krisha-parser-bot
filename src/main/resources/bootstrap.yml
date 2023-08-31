@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    active: @activatedProperties@
+  application:
+    name: order-info-bot
+  config:
+    import: optional:configserver:@configUri@
+  main:
+    allow-bean-definition-overriding: true
+
+krisha_bot:
+  username: krisha_new_deals_bot
+  token: 6512457313:AAGUsrYCc-q5K2pkEba3c11NerenXyJ4RA0
+  channel_chat_id: -1001967046753
+
+krisha:
+  base:
+    url: https://krisha.kz
+  cart:
+    url: ${krisha.base.url}/a/show/
+  search:
+    first:
+      url: ${krisha.base.url}/arenda/kvartiry/almaty-bostandykskij/?das[live.rooms][]=1&das[live.rooms][]=2&das[price][to]=250000&das[_sys.hasphoto]=1&das[who]=1
+    second:
+      url: ${krisha.base.url}/arenda/kvartiry/almaty-medeuskij/?das[_sys.hasphoto]=1&das[live.furniture]=1&das[live.rooms][]=1&das[live.rooms][]=2&das[price][to]=250000&das[who]=1
+
+
+scheduler:
+  krisha:
+    cron:
+      expression: 0/5 * * 1/1 * ?
+
